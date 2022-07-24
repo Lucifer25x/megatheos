@@ -1,10 +1,14 @@
+// Import packages
 const { BrowserWindow, app, Menu, dialog} = require('electron');
 const path = require('path');
 const isDev = require('electron-is-dev');
+
 let mainWindow;
 
+// Width and height of the window
 const [winWidth, winHeight] = [1000, 800];
 
+// Menu template
 const template = [
     {
         label: 'File',
@@ -33,7 +37,9 @@ const template = [
     { role: 'windowMenu' },
 ]
 
+// Create Window
 function createWindow() {
+    // Window properties
     mainWindow = new BrowserWindow({
         width: winWidth,
         height: winHeight,
@@ -45,9 +51,11 @@ function createWindow() {
             devTools: isDev
         }
     })
-
+    
+    // Index file
     mainWindow.loadFile('public/index.html');
 
+    // If isDev is true you will be able to open dev tools from the menu
     if (isDev) {
         template.push({ role: 'viewMenu' })
     }
