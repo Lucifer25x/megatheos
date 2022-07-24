@@ -1,15 +1,15 @@
+// Import packages
 const { ipcRenderer } = require('electron');
 const { cp } = require('fs');
 const path = require('path');
 
-const idLength = 3;
-
 // Create random id
 function createRandomId() {
+    const idLength = 3; // ID length
     let id = '';
-    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // Characters
     for (let i = 0; i < idLength; i++) {
-        id += chars.charAt(Math.floor(Math.random() * chars.length));
+        id += chars.charAt(Math.floor(Math.random() * chars.length)); // add random character to ID
     }
 
     return id;
@@ -17,8 +17,10 @@ function createRandomId() {
 
 // Add to the finished books list
 function addFinished(checkbox) {
-    let bookList = JSON.parse(window.localStorage.getItem('books'));
-    const id = checkbox.getAttribute('id');
+    let bookList = JSON.parse(window.localStorage.getItem('books')); // Get books list from localStorage
+    const id = checkbox.getAttribute('id'); // Get ID
+    
+    // Find book from books list with ID
     for (let i = 0; i < bookList.length; i++) {
         if (bookList[i].id === id) {
             if (checkbox.checked) {
@@ -29,6 +31,7 @@ function addFinished(checkbox) {
             break;
         }
     }
+    // Change books list
     localStorage.setItem('books', JSON.stringify(bookList));
 }
 
@@ -108,12 +111,6 @@ function loadFavorites() {
             }
         })
     }
-}
-
-// Load window
-window.onload = () => {
-    loadReadingList();
-    loadFavorites();
 }
 
 // Open File
@@ -204,4 +201,10 @@ document.getElementById('add').onclick = () => {
         `
         collection.appendChild(li);
     }
+}
+
+// Load window
+window.onload = () => {
+    loadReadingList();
+    loadFavorites();
 }
