@@ -1,14 +1,19 @@
 {
   "name": "megatheos",
   "version": "1.0.0",
-  "description": "",
+  "description": "Simple book reading app with some basic functions.",
   "main": "src/main.js",
   "scripts": {
     "start": "electron ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "reading",
+    "electron",
+    "web",
+    "reading-app"
+  ],
+  "author": "Lucifer25x",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^19.0.8",
     "electron-is-dev": "^2.0.0"
