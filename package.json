@@ -1,0 +1,16 @@
+{
+  "name": "megatheos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^19.0.8",
+    "electron-is-dev": "^2.0.0"
+  }
+}
