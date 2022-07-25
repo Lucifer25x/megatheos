@@ -1,33 +1,27 @@
 // Import packages
 const { ipcRenderer } = require('electron');
-const { cp } = require('fs');
 const path = require('path');
 
-// Create random id
+// Create random ID
 function createRandomId() {
-    const idLength = 3; // ID length
+    const [idLength, chars] = [3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"]; // ID Length and Characters
     let id = '';
-    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // Characters
     for (let i = 0; i < idLength; i++) {
         id += chars.charAt(Math.floor(Math.random() * chars.length)); // add random character to ID
     }
-
     return id;
 }
 
 // Add to the finished books list
 function addFinished(checkbox) {
     let bookList = JSON.parse(window.localStorage.getItem('books')); // Get books list from localStorage
-    const id = checkbox.getAttribute('id'); // Get ID
-    
+    const id = checkbox.getAttribute('id'); // Get ID attribute of checkbox
+
     // Find book from books list with ID
     for (let i = 0; i < bookList.length; i++) {
         if (bookList[i].id === id) {
-            if (checkbox.checked) {
-                bookList[i].finished = true;
-            } else {
-                bookList[i].finished = false;
-            }
+            // If the checkbox is checked, the book is finished, otherwise the book is not finished.
+            bookList[i].finished = checkbox.checked;
             break;
         }
     }
@@ -35,61 +29,27 @@ function addFinished(checkbox) {
     localStorage.setItem('books', JSON.stringify(bookList));
 }
 
-// Load reading list
-function loadReadingList() {
-    const bookList = window.localStorage.getItem('books');
-    let books = JSON.parse(bookList) || [];
-    if (books.length > 0) {
-        books.forEach(book => {
-            let title = book.title;
-            let author = book.author;
-            let url = book.url;
-            let card = document.createElement('div');
-            let checked = book.finished ? 'checked' : '';
-            const parent = document.getElementById('all-books');
-            card.classList.add('col');
-            card.classList.add('s12');
-            card.classList.add('m3');
-            card.innerHTML = `
-                <div class="card grey darken-4 darken-1">
-                    <div class="card-content white-text">
-                        <span class="card-title">${title}</span>
-                        <p>Author: ${author}</p>
-                        <br/>
-                        <p>
-                            <label>
-                                <input type="checkbox" class="filled-in" onchange="addFinished(this)" id="${book.id}" ${checked}/>
-                                <span>Finished</span>
-                            </label>
-                        </p>
-                    </div>
-                    <div class="card-action">
-                        <a href="${path.join(__dirname, 'reading.html') + `?file=${url}`}">Read the book</a>
-                        <a href="#">Edit Info</a>
-                    </div>
-                </div>`
-            parent.appendChild(card);
-        })
+// Add multiple or single classes to element
+function addClass(element, classes) {
+    if (Array.isArray(classes)) {
+        for (let i = 0; i < classes.length; i++) {
+            element.classList.add(classes[i]);
+        }
+    } else {
+        element.classList.add(classes);
     }
 }
 
-// Load favorites list
-function loadFavorites() {
-    const bookList = window.localStorage.getItem('books');
-    let books = JSON.parse(bookList) || [];
-    if (books.length > 0) {
-        books.forEach(book => {
-            if (book.favorite) {
-                let title = book.title;
-                let author = book.author;
-                let url = book.url;
-                let card = document.createElement('div');
-                let checked = book.finished ? 'checked' : '';
-                const parent = document.getElementById('favorites');
-                card.classList.add('col');
-                card.classList.add('s12');
-                card.classList.add('m3');
-                card.innerHTML = `
+// Create card
+function createCard(book, parent) {
+    // Informations about book
+    const [id, title, author, url, checked] = [book.id, book.title, book.author, book.url, (book.finished ? 'checked' : '')];
+
+    // Create card element
+    let card = document.createElement('div');
+    const classes = ['col', 's12', 'm3']
+    addClass(card, classes);
+    card.innerHTML = `
                 <div class="card grey darken-4 darken-1">
                     <div class="card-content white-text">
                         <span class="card-title">${title}</span>
@@ -97,7 +57,7 @@ function loadFavorites() {
                         <br/>
                         <p>
                             <label>
-                                <input type="checkbox" class="filled-in" onchange="addFinished(this)" id="${book.id}" ${checked}/>
+                                <input type="checkbox" class="filled-in" onchange="addFinished(this)" id="${id}" ${checked}/>
                                 <span>Finished</span>
                             </label>
                         </p>
@@ -107,17 +67,36 @@ function loadFavorites() {
                         <a href="#">Edit Info</a>
                     </div>
                 </div>`
-                parent.appendChild(card);
-            }
-        })
+
+    parent.appendChild(card);
+}
+
+// Load reading list and favorites
+function loadList() {
+    // Parent elements of the lists
+    const [readingListParent, favoritesListParent] = [document.getElementById('all-books'), document.getElementById('favorites')];
+
+    // If there are 'books' in localStorage it will copy it, otherwise it will create empty array
+    let books = JSON.parse(window.localStorage.getItem('books')) || [];
+
+    for (let i = 0; i < books.length; i++) {
+        // Add to the reading list
+        createCard(books[i], readingListParent);
+
+        // Add to the favorites list
+        if (books[i].favorite) {
+            createCard(books[i], favoritesListParent);
+        }
     }
 }
 
 // Open File
 ipcRenderer.on('file', (event, location) => {
     if (location) {
-        const bookList = window.localStorage.getItem('books');
-        let books = JSON.parse(bookList) || [];
+        // If there are 'books' in localStorage it will copy it, otherwise it will create empty array
+        let books = JSON.parse(window.localStorage.getItem('books')) || [];
+
+        // Book element for the list
         let book = {
             id: createRandomId(),
             title: location.replace(/^.*[\\\/]/, ''),
@@ -126,12 +105,12 @@ ipcRenderer.on('file', (event, location) => {
             author: null,
             url: location
         }
+
+        //  Check if the book exists
         let isExist = false;
-        if (books.length > 0) {
-            for (let i = 0; i < books.length; i++) {
-                if (books[i].url === location) {
-                    isExist = true;
-                }
+        for (let i = 0; i < books.length; i++) {
+            if (books[i].url === location) {
+                isExist = true;
             }
         }
         if (!isExist) {
@@ -139,7 +118,7 @@ ipcRenderer.on('file', (event, location) => {
             localStorage.setItem('books', JSON.stringify(books));
         }
 
-        let readingUrl = path.join(__dirname, 'reading.html') + `?file=${location}`;
+        const readingUrl = path.join(__dirname, 'reading.html') + `?file=${location}`;
         window.location.href = readingUrl;
     }
 })
@@ -149,40 +128,10 @@ function addFavorite(element) {
     let bookList = JSON.parse(window.localStorage.getItem('books'));
     const id = element.getAttribute('id');
     for (let i = 0; i < bookList.length; i++) {
-        if (bookList[i].id === id ) {
+        if (bookList[i].id === id) {
+            // If the book is not a favorite, make 'favorite' true, otherwise set 'favorite' false
             bookList[i].favorite = !bookList[i].favorite;
-            if(bookList[i].favorite){
-                let title = bookList[i].title;
-                let author = bookList[i].author;
-                let url = bookList[i].url;
-                let card = document.createElement('div');
-                let checked = bookList[i].finished ? 'checked' : '';
-                const parent = document.getElementById('favorites');
-                card.classList.add('col');
-                card.classList.add('s12');
-                card.classList.add('m3');
-                card.innerHTML = `
-                <div class="card grey darken-4 darken-1">
-                    <div class="card-content white-text">
-                        <span class="card-title">${title}</span>
-                        <p>Author: ${author}</p>
-                        <br/>
-                        <p>
-                            <label>
-                                <input type="checkbox" class="filled-in" onchange="addFinished(this)" id="${bookList[i].id}" ${checked}/>
-                                <span>Finished</span>
-                            </label>
-                        </p>
-                    </div>
-                    <div class="card-action">
-                        <a href="${path.join(__dirname, 'reading.html') + `?file=${url}`}">Read the book</a>
-                        <a href="#">Edit Info</a>
-                    </div>
-                </div>`
-                parent.appendChild(card);
-            } else {
-                window.location.reload();
-            }
+            window.location.reload();
             break;
         }
     }
@@ -193,18 +142,19 @@ function addFavorite(element) {
 document.getElementById('add').onclick = () => {
     let books = JSON.parse(localStorage.getItem('books')) || [];
     const collection = document.getElementById('book-collection');
-    for (let i = 0; i < books.length; i++) {
-        const li = document.createElement('li');
-        li.classList.add('collection-item');
-        li.innerHTML = `
-        <div>${books[i].title}<a href="#!" class="secondary-content" id="${books[i].id}" onclick="addFavorite(this)"><i class="material-icons">favorites</i></a></div>
-        `
-        collection.appendChild(li);
+    if(collection.innerHTML.length === 18){
+        for (let i = 0; i < books.length; i++) {
+            const li = document.createElement('li');
+            addClass(li, 'collection-item')
+            li.innerHTML = `
+            <div>${books[i].title}<a href="#!" class="secondary-content" id="${books[i].id}" onclick="addFavorite(this)"><i class="material-icons">favorites</i></a></div>
+            `
+            collection.appendChild(li);
+        }
     }
 }
 
 // Load window
 window.onload = () => {
-    loadReadingList();
-    loadFavorites();
+    loadList();
 }
