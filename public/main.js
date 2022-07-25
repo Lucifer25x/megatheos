@@ -41,9 +41,9 @@ function addClass(element, classes) {
 }
 
 // Create card
-function createCard(book, parent) {
-    // Informations about book
-    const [id, title, author, url, checked] = [book.id, book.title, book.author, book.url, (book.finished ? 'checked' : '')];
+function createCard({id, title, author, url, finished}, parent) {
+    // Check if book finished
+    const checked = finished ? 'checked' : '';
 
     // Create card element
     let card = document.createElement('div');
