@@ -1,6 +1,7 @@
 // Import packages
 const { ipcRenderer } = require('electron');
 const path = require('path');
+const { readFile, readdir } = require('fs');
 
 // Create random ID
 function createRandomId() {
@@ -40,6 +41,22 @@ function addClass(element, classes) {
     }
 }
 
+// Change Author
+function changeAuthor(input) {
+    if(event.key === 'Enter'){
+        const authorName = input.value;
+        const id = input.getAttribute('class');
+        let books = JSON.parse(window.localStorage.getItem('books')) || [];
+        for(let i = 0; i < books.length; i++){
+            if(books[i].id === id){
+                books[i].author = authorName;
+                break;
+            }
+        }
+        localStorage.setItem('books', JSON.stringify(books));
+    }
+}
+
 // Create card
 function createCard({id, title, author, url, finished}, parent) {
     // Check if book finished
@@ -49,24 +66,35 @@ function createCard({id, title, author, url, finished}, parent) {
     let card = document.createElement('div');
     const classes = ['col', 's12', 'm3']
     addClass(card, classes);
+    const lang = path.join(__dirname, `lang/${localStorage.getItem('lang') || 'en'}.json`);
+    const {read, readed} = require(lang);
+
+    //TODO: Add photo change option
     card.innerHTML = `
-                <div class="card grey darken-4 darken-1">
-                    <div class="card-content white-text">
-                        <span class="card-title">${title}</span>
+                <div class="card">
+                    <div class="card-image waves-effect waves-block waves-light">
+                        <img class="activator" src="./book.jpeg">
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title activator grey-text text-darken-4">${title}<i
+                                class="material-icons right">more_vert</i></span>
+                        <p><a href="${path.join(__dirname, 'reading.html') + `?file=${url}`}">${read}</a></p>
+                    </div>
+                    <div class="card-reveal">
+                        <span class="card-title grey-text text-darken-4">${title}<i class="material-icons right">close</i></span>
                         <p>Author: ${author}</p>
-                        <br/>
+                        <div class="input-field col s12">
+                            <input id="author" type="text" class="${id}" onkeydown="changeAuthor(this)">
+                            <label for="author">Author</label>
+                        </div>
                         <p>
                             <label>
-                                <input type="checkbox" class="filled-in" onchange="addFinished(this)" id="${id}" ${checked}/>
-                                <span>Finished</span>
+                                <input type="checkbox" class="filled-in" onchange="addFinished(this)" id="${id}" ${checked} />
+                                <span>${readed}</span>
                             </label>
                         </p>
                     </div>
-                    <div class="card-action">
-                        <a href="${path.join(__dirname, 'reading.html') + `?file=${url}`}">Read the book</a>
-                        <a href="#">Edit Info</a>
-                    </div>
-                </div>`
+                </div>`;
 
     parent.appendChild(card);
 }
@@ -154,7 +182,34 @@ document.getElementById('add').onclick = () => {
     }
 }
 
+// Load language
+function loadLang(){
+    // Get information about the language
+    const lang = localStorage.getItem('lang');
+    if (!lang) return
+    const langDirectory = path.join(__dirname, 'lang');
+    const langFile = path.join(langDirectory, `${lang}.json`);
+
+    // Elements
+    const elements = ['about', 'all-books', 'favorites', 'collections', 'settings', 'book-list', 'close'];
+
+    // Read the content of the file
+    readFile(langFile, 'utf-8', (err, data) => {
+        if (err) throw err
+        // Content of the file (in object type)
+        const content = JSON.parse(data);
+
+        // Convert the all text
+        for(let i = 0; i < elements.length; i++){
+            const text = content[elements[i]];
+            document.getElementById(`${elements[i]}-text`).innerText = text;
+        }
+    })
+}
+
 // Load window
 window.onload = () => {
     loadList();
+    //TODO: Add language select option to settings
+    // loadLang();
 }
