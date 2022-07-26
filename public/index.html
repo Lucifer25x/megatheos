@@ -40,19 +40,23 @@
             <a style="margin-left: 10px" href="#" class="brand-logo">Megatheos</a>
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="about.html"><i class="material-icons left">info</i>About</a></li>
+                <li><a href="about.html"><i class="material-icons left">info</i><span id="about-text">About</span></a>
+                </li>
                 <li><a href="https://github.com/Lucifer25x/megatheos"><i class="material-icons left">code</i>GitHub</a>
                 </li>
             </ul>
         </div>
         <div class="nav-content">
             <ul class="tabs tabs-transparent">
-                <li class="tab"><a class="active" href="#all-books"><i class="material-icons left">library_books</i>All
-                        Books</a></li>
-                <li class="tab"><a href="#favorites"><i class="material-icons left">favorites</i> Favorites</a></li>
+                <li class="tab"><a class="active" href="#all-books"><i
+                            class="material-icons left">library_books</i><span id="all-books-text">All Books</span></a>
+                </li>
+                <li class="tab"><a href="#favorites"><i class="material-icons left">favorites</i> <span
+                            id="favorites-text">Favorites</span></a></li>
                 <li class="tab"><a href="#collections"><i class="material-icons left">collections_bookmark</i>
-                        Collections</a></li>
-                <li class="tab"><a href="#settings"><i class="material-icons left">settings</i> Settings</a></li>
+                        <span id="collections-text">Collections</span></a></li>
+                <li class="tab"><a href="#settings"><i class="material-icons left">settings</i> <span
+                            id="settings-text">Settings</span></a></li>
             </ul>
         </div>
     </nav>
@@ -76,19 +80,20 @@
         <!-- Books list modal -->
         <div id="modal1" class="modal bottom-sheet">
             <div class="modal-content">
-                <h4>Book List</h4>
+                <h4 id="book-list-text">Book List</h4>
 
                 <ul class="collection" id="book-collection">
 
                 </ul>
             </div>
             <div class="modal-footer">
-                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat"><span
+                        id="close-text">Close</span></a>
             </div>
         </div>
     </div>
 
-    <div id="collections" class="col s12">
+    <div id="collections" class="col s12 row">
         <h2>Coming soon!</h2>
     </div>
 
