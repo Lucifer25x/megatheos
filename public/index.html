@@ -98,7 +98,41 @@
     </div>
 
     <div id="settings" class="col s12">
-        <h2>Coming soon!</h2>
+        <div class="container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Setting Name</th>
+                        <th>Select</th>
+                    </tr>
+                </thead>
+            
+                <tbody>
+                    <tr>
+                        <td>Select Language</td>
+                        <td>
+                            <select id="lang">
+                                <option value="en">English</option>
+                                <option value="tr">Turkish</option>
+                                <option value="az">Azerbaijan</option>
+                                <option value="ru">Russian</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Select Theme</td>
+                        <td>
+                            <select id="theme" disabled>
+                                <option value="dark">Dark</option>
+                                <option value="bright">Bright</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <a class="waves-effect waves-light btn">Back to Default</a>
+        </div>
     </div>
 
     <script src="materialize/js/materialize.min.js"></script>

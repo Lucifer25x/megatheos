@@ -187,6 +187,13 @@ function loadLang(){
     // Get information about the language
     const lang = localStorage.getItem('lang');
     if (!lang) return
+
+    // Set language in language menu (in settings)
+    document.getElementById('lang').value = lang;
+
+    if(lang === 'en') return
+
+    // Language location
     const langDirectory = path.join(__dirname, 'lang');
     const langFile = path.join(langDirectory, `${lang}.json`);
 
@@ -207,9 +214,15 @@ function loadLang(){
     })
 }
 
+// Select Language
+document.getElementById('lang').onchange = () => {
+    const option = document.getElementById('lang').value;
+    localStorage.setItem('lang', option);
+    window.location.reload();
+}
+
 // Load window
 window.onload = () => {
     loadList();
-    //TODO: Add language select option to settings
-    // loadLang();
+    loadLang();
 }
