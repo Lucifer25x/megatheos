@@ -13,10 +13,6 @@
             background-color: #424242;
         }
 
-        #favorites h1 {
-            color: #616161;
-        }
-
         #favorites #add {
             position: fixed;
             bottom: 15px;
@@ -122,7 +118,7 @@
                     <tr>
                         <td>Select Theme</td>
                         <td>
-                            <select id="theme" disabled>
+                            <select id="theme">
                                 <option value="dark">Dark</option>
                                 <option value="bright">Bright</option>
                             </select>
@@ -131,7 +127,7 @@
                 </tbody>
             </table>
             <br>
-            <a class="waves-effect waves-light btn">Back to Default</a>
+            <a class="waves-effect waves-light btn" id="default">Back to Default</a>
         </div>
     </div>
 

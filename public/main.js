@@ -1,7 +1,13 @@
 // Import packages
 const { ipcRenderer } = require('electron');
 const path = require('path');
-const { readFile, readdir } = require('fs');
+const { readFile } = require('fs');
+
+// Settings defaults
+const default_settings = {
+    lang: 'en',
+    theme: 'dark'
+}
 
 // Create random ID
 function createRandomId() {
@@ -221,8 +227,39 @@ document.getElementById('lang').onchange = () => {
     window.location.reload();
 }
 
+// Set Theme
+function setTheme(theme){
+    if(theme){
+        if(theme === 'dark'){
+            document.body.style.backgroundColor = '#424242';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.body.style.backgroundColor = '#c5c5c5';
+            localStorage.setItem('theme', 'bright');
+        }
+    } else {
+        const defaultTheme = localStorage.getItem('theme') || 'dark';
+        document.getElementById('theme').value = defaultTheme;
+        setTheme(defaultTheme);
+    }
+}
+
+// Change Theme
+document.getElementById('theme').onchange = () => {
+    const theme = document.getElementById('theme').value;
+    setTheme(theme)
+}
+
+// Back to default settings
+document.getElementById('default').onclick = () => {
+    localStorage.setItem('lang', default_settings.lang);
+    localStorage.setItem('theme', default_settings.theme);
+    window.location.reload();
+}
+
 // Load window
 window.onload = () => {
     loadList();
     loadLang();
+    setTheme();
 }
