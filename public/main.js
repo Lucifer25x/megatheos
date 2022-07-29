@@ -1,13 +1,9 @@
 // Import packages
 const { ipcRenderer } = require('electron');
+const Dialogs = require('dialogs')
+const dialogs = Dialogs()
 const path = require('path');
 const { readFile } = require('fs');
-
-// Settings defaults
-const default_settings = {
-    lang: 'en',
-    theme: 'dark'
-}
 
 // Create random ID
 function createRandomId() {
@@ -49,12 +45,12 @@ function addClass(element, classes) {
 
 // Change Author
 function changeAuthor(input) {
-    if(event.key === 'Enter'){
+    if (event.key === 'Enter') {
         const authorName = input.value;
         const id = input.getAttribute('class');
         let books = JSON.parse(window.localStorage.getItem('books')) || [];
-        for(let i = 0; i < books.length; i++){
-            if(books[i].id === id){
+        for (let i = 0; i < books.length; i++) {
+            if (books[i].id === id) {
                 books[i].author = authorName;
                 break;
             }
@@ -64,7 +60,7 @@ function changeAuthor(input) {
 }
 
 // Create card
-function createCard({id, title, author, url, finished}, parent) {
+function createCard({ id, title, author, url, finished }, parent) {
     // Check if book finished
     const checked = finished ? 'checked' : '';
 
@@ -73,7 +69,7 @@ function createCard({id, title, author, url, finished}, parent) {
     const classes = ['col', 's12', 'm3']
     addClass(card, classes);
     const lang = path.join(__dirname, `lang/${localStorage.getItem('lang') || 'en'}.json`);
-    const {read, readed} = require(lang);
+    const { read, readed } = require(lang);
 
     //TODO: Add photo change option
     card.innerHTML = `
@@ -176,7 +172,7 @@ function addFavorite(element) {
 document.getElementById('add').onclick = () => {
     let books = JSON.parse(localStorage.getItem('books')) || [];
     const collection = document.getElementById('book-collection');
-    if(collection.innerHTML.length === 18){
+    if (collection.innerHTML.length === 18) {
         for (let i = 0; i < books.length; i++) {
             const li = document.createElement('li');
             addClass(li, 'collection-item')
@@ -189,7 +185,7 @@ document.getElementById('add').onclick = () => {
 }
 
 // Load language
-function loadLang(){
+function loadLang() {
     // Get information about the language
     const lang = localStorage.getItem('lang');
     if (!lang) return
@@ -197,7 +193,7 @@ function loadLang(){
     // Set language in language menu (in settings)
     document.getElementById('lang').value = lang;
 
-    if(lang === 'en') return
+    if (lang === 'en') return
 
     // Language location
     const langDirectory = path.join(__dirname, 'lang');
@@ -213,10 +209,12 @@ function loadLang(){
         const content = JSON.parse(data);
 
         // Convert the all text
-        for(let i = 0; i < elements.length; i++){
+        for (let i = 0; i < elements.length; i++) {
             const text = content[elements[i]];
             document.getElementById(`${elements[i]}-text`).innerText = text;
         }
+
+        document.getElementById('collection-header-text').innerText = content["collections"];
     })
 }
 
@@ -228,14 +226,15 @@ document.getElementById('lang').onchange = () => {
 }
 
 // Set Theme
-function setTheme(theme){
-    if(theme){
-        if(theme === 'dark'){
+function setTheme(theme, set) {
+    if (theme) {
+        if (theme === 'dark') {
             document.body.style.backgroundColor = '#424242';
-            localStorage.setItem('theme', 'dark');
         } else {
             document.body.style.backgroundColor = '#c5c5c5';
-            localStorage.setItem('theme', 'bright');
+        }
+        if(set){
+            localStorage.setItem('theme', theme);
         }
     } else {
         const defaultTheme = localStorage.getItem('theme') || 'dark';
@@ -247,13 +246,56 @@ function setTheme(theme){
 // Change Theme
 document.getElementById('theme').onchange = () => {
     const theme = document.getElementById('theme').value;
-    setTheme(theme)
+    setTheme(theme, true)
+}
+
+// Load collections
+function loadCollections() {
+    const list = document.getElementById('collection-list');
+    const collections = JSON.parse(localStorage.getItem('collections')) || [];
+
+    for (let i = 0; i < collections.length; i++) {
+        // Collection Info
+        const collectionName = collections[i].name;
+        const id = collections[i].id;
+        const collectionUrl = path.join(__dirname, 'collection.html') + `?id=${id}`;
+
+        // Create Collection Element
+        const li = document.createElement('li');
+        li.classList.add('collection-item');
+        li.innerHTML = `
+            <div>${collectionName}<a href="${collectionUrl}" class="secondary-content"><i class="material-icons">view_module</i></a></div>
+        `
+        list.appendChild(li)
+    }
+}
+
+// Create Collection
+document.getElementById('create-collection').onclick = () => {
+    // Collection List
+    let collectionList = JSON.parse(localStorage.getItem('collections')) || [];
+
+    // Get new collection name
+    dialogs.prompt('Create Collection', collectionName => {
+        if(collectionName){
+            let collection = {
+                id: createRandomId(),
+                name: collectionName,
+                books: []
+            }
+            collectionList.push(collection);
+            localStorage.setItem('collections', JSON.stringify(collectionList));
+        }
+    })
+
+    // Reload window
+    window.location.reload();
 }
 
 // Back to default settings
 document.getElementById('default').onclick = () => {
-    localStorage.setItem('lang', default_settings.lang);
-    localStorage.setItem('theme', default_settings.theme);
+    localStorage.removeItem('lang');
+    localStorage.removeItem('theme');
     window.location.reload();
 }
 
@@ -261,5 +303,6 @@ document.getElementById('default').onclick = () => {
 window.onload = () => {
     loadList();
     loadLang();
+    loadCollections();
     setTheme();
 }

@@ -17,5 +17,8 @@
   "devDependencies": {
     "electron": "^19.0.8",
     "electron-is-dev": "^2.0.0"
+  },
+  "dependencies": {
+    "dialogs": "^2.0.1"
   }
 }
