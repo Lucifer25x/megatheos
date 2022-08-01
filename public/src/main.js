@@ -233,7 +233,7 @@ function setTheme(theme, set) {
         } else {
             document.body.style.backgroundColor = '#c5c5c5';
         }
-        if(set){
+        if (set) {
             localStorage.setItem('theme', theme);
         }
     } else {
@@ -277,7 +277,7 @@ document.getElementById('create-collection').onclick = () => {
 
     // Get new collection name
     dialogs.prompt('Create Collection', collectionName => {
-        if(collectionName){
+        if (collectionName) {
             let collection = {
                 id: createRandomId(),
                 name: collectionName,
@@ -306,3 +306,5 @@ window.onload = () => {
     loadCollections();
     setTheme();
 }
+
+module.exports = { createCard };
