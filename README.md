@@ -1,7 +1,9 @@
 # <img src="./src/icon.png" alt="megatheos" width=25/> Megatheos
 | Simple book reading app
 
-![Screenshot](./screenshot.png)
+![Screenshot](./screenshots/all-books.png)
+
+[All Screenshots](./screenshots)
 
 <hr/>
 
@@ -14,4 +16,4 @@
 * Customization settings
 * Creating Collections
 
-#### Only tested on Linux
+#### Tested on Linux (Ubuntu 22.04)
