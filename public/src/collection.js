@@ -1,5 +1,3 @@
-//FIXME: Add collection list to books instead of collection list and improve site performance. 
-
 // Materialize Auto Init
 M.AutoInit();
 
@@ -14,16 +12,11 @@ let id = null;
 function addToCollection(element) {
     const bookList = JSON.parse(window.localStorage.getItem('books')) || []; // Book List
     const bookId = element.getAttribute('id'); // Book Id
-    let collectionList = JSON.parse(window.localStorage.getItem('collections')) || []; // Collection List
-    for (let i = 0; i < collectionList.length; i++) {
-        if (collectionList[i].id === id) {
-            for (let j = 0; j < bookList.length; j++) {
-                if (bookList[j].id === bookId) {
-                    collectionList[i].books.push(bookList[j]);
-                    localStorage.setItem('collections', JSON.stringify(collectionList));
-                    window.location.reload();
-                }
-            }
+    for (let j = 0; j < bookList.length; j++) {
+        if (bookList[j].id === bookId) {
+            bookList[j].collection.push(id);
+            localStorage.setItem('books', JSON.stringify(bookList));
+            window.location.reload();
         }
     }
 }
@@ -63,13 +56,12 @@ function addClass(element, classes) {
 
 // Change Author
 function changeAuthor(input) {
-    //FIXME: Change Author for collection books too
     if (event.key === 'Enter') {
         const authorName = input.value;
-        const id = input.getAttribute('class');
+        const book_id = input.getAttribute('class');
         let books = JSON.parse(window.localStorage.getItem('books')) || [];
         for (let i = 0; i < books.length; i++) {
-            if (books[i].id === id) {
+            if (books[i].id === book_id) {
                 books[i].author = authorName;
                 break;
             }
@@ -120,16 +112,24 @@ function createCard({ id, title, author, url, finished }, parent) {
     parent.appendChild(card);
 }
 
+// Check collection
+function isExist(collections){
+    for(let i = 0; i < collections.length; i++){
+        if(collections[i] === id){
+            return true
+        }
+    }
+    
+    return false
+}
+
 // Load Book Collection
 function loadBookCollection(id) {
-    let collectionList = JSON.parse(localStorage.getItem('collections')) || []; // Collection List
+    let bookList = JSON.parse(localStorage.getItem('books')) || []; // Book List
     const parent = document.getElementById('collection');
-    for (let i = 0; i < collectionList.length; i++) {
-        if (collectionList[i].id === id) {
-            for (let j = 0; j < collectionList[i].books.length; j++) {
-                createCard(collectionList[i].books[j], parent);
-            }
-            break;
+    for(let i = 0; i < bookList.length; i++){
+        if(isExist(bookList[i].collection)){
+            createCard(bookList[i], parent);
         }
     }
 }

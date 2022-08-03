@@ -133,7 +133,8 @@ ipcRenderer.on('file', (event, location) => {
             finished: false,
             favorite: false,
             author: null,
-            url: location
+            url: location,
+            collection: []
         }
 
         //  Check if the book exists
@@ -280,16 +281,15 @@ document.getElementById('create-collection').onclick = () => {
         if (collectionName) {
             let collection = {
                 id: createRandomId(),
-                name: collectionName,
-                books: []
+                name: collectionName
             }
             collectionList.push(collection);
             localStorage.setItem('collections', JSON.stringify(collectionList));
+            
+            // Reload Window
+            window.location.reload();
         }
     })
-
-    // Reload window
-    window.location.reload();
 }
 
 // Back to default settings
