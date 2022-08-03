@@ -9,6 +9,7 @@
 
 ### Some functions:
 * All the books you have read before (`All Books` tab)
+* Change book author
 * Mark the book as finished
 * Add the book to `Favorites`
 * Collections
