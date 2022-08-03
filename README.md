@@ -11,9 +11,7 @@
 * All the books you have read before (`All Books` tab)
 * Mark the book as finished
 * Add the book to `Favorites`
-
-### Expected new functions:
-* Customization settings
-* Creating Collections
+* Collections
+* Settings
 
 #### Tested on Linux (Ubuntu 22.04)
